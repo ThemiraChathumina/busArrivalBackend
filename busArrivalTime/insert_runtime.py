@@ -1,15 +1,43 @@
-import os
+import numpy as np
 import pandas as pd
-from django.core.wsgi import get_wsgi_application
+from datetime import timedelta
 
-# Set up Django environment
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'busArrivalTime.settings')
-application = get_wsgi_application()
+from setEnvironment import getApplication
+
+application = getApplication()
 
 from busArrivalTime.models import BusRunningTimes
 
-def main():
-    filtered_rows = pd.read_csv('data/busses_train.csv')  # Load your filtered data here
+def addRunningTime(startTime, endTime):
+
+    dataset = pd.read_csv('data/busses_train.csv')
+    dataset.dropna(inplace=True)
+    dataset['date'] = pd.to_datetime(dataset['date'])
+    dataset['start_time'] = pd.to_datetime(dataset['start_time'], format='%H:%M:%S')
+
+    # Sort the DataFrame by "date" and "start_time"
+    df_sorted = dataset.sort_values(by=['date', 'start_time'])
+
+    date_component = dataset['date'].dt.date
+    time_component = dataset['start_time'].dt.time
+
+    # Create a new datetime column by combining the date and time components
+    dataset['new_datetime'] = pd.to_datetime(date_component.astype(str) + ' ' + time_component.astype(str))
+
+    # Define the start and end datetime range
+    # start_datetime = pd.to_datetime('2021-10-01 06:40:00')
+    # end_datetime = pd.to_datetime('2021-10-01 06:50:00')
+
+    start_datetime = startTime
+    end_datetime = endTime
+
+    # Create a boolean mask based on the conditions
+    mask = (dataset["new_datetime"] >= start_datetime) & (dataset["new_datetime"] <= end_datetime)
+
+    # Apply the mask to filter the DataFrame
+    filtered_rows = dataset[mask]
+
+
 
     for index, row in filtered_rows.iterrows():
         BusRunningTimes.objects.create(
@@ -18,7 +46,7 @@ def main():
             direction=row['direction'],
             segment=row['segment'],
             date=row['date'],
-            start_time=row['start_time'],
+            start_time=row['start_time'].time(),
             end_time=row['end_time'],
             run_time_in_seconds=row['run_time_in_seconds'],
             length=row['length'],
@@ -46,8 +74,3 @@ def main():
             dt_n_1=row['dt(n-1)'],
         )
 
-    print("Data inserted successfully.")
-
-
-if __name__ == "__main__":
-    main()
