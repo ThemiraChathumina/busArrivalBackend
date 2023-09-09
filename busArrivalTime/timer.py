@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import time
 from databaseDetails import database
 import mysql.connector
+from UpdateDateTime import updateTime
 
 def timer():
     print("Timer started.")
@@ -32,7 +33,7 @@ def timer():
         # do stuff here ---------------------------
 
         print("Current time: " + str(current_time), minute, second)
-
+        updateTime(str(current_time), str(start_date))
         #------------------------------
         current_time = end_time
 
