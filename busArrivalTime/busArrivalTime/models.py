@@ -1,5 +1,12 @@
 from django.db import models
+import os
+import sys
 
+# Add the path to the directory containing getArrivalTimes.py
+rootPath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(rootPath)
+
+from routeDetails import *
 
 class BusRunningTimes(models.Model):
     trip_id = models.FloatField()
@@ -88,3 +95,17 @@ class DateAndTime(models.Model):
 
     class Meta:
         db_table = 'date_and_time'
+
+class ArrivalTimes(models.Model):
+    trip_id = models.IntegerField()
+    latitude = models.FloatField(default=7.292462226)
+    longitude = models.FloatField(default=80.6349778)
+    deviceid = models.IntegerField(default=0)
+    def __str__(self):
+        return f"ArrivalTimes: {self.trip_id} - {self.date} - {self.bus_stop}"
+
+    class Meta:
+        db_table = 'arrival_times'
+
+for stop in busStops:
+    ArrivalTimes.add_to_class(f'{stop}', models.CharField(max_length=255))

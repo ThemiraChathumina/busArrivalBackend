@@ -13,13 +13,13 @@ def addRunningTime(startTime, endTime):
     dataset = pd.read_csv('data/busses_train.csv')
     dataset.dropna(inplace=True)
     dataset['date'] = pd.to_datetime(dataset['date'])
-    dataset['start_time'] = pd.to_datetime(dataset['start_time'], format='%H:%M:%S')
+    dataset['end_time'] = pd.to_datetime(dataset['end_time'], format='%H:%M:%S')
 
-    # Sort the DataFrame by "date" and "start_time"
-    df_sorted = dataset.sort_values(by=['date', 'start_time'])
+    # Sort the DataFrame by "date" and "end_time"
+    df_sorted = dataset.sort_values(by=['date', 'end_time'])
 
     date_component = dataset['date'].dt.date
-    time_component = dataset['start_time'].dt.time
+    time_component = dataset['end_time'].dt.time
 
     # Create a new datetime column by combining the date and time components
     dataset['new_datetime'] = pd.to_datetime(date_component.astype(str) + ' ' + time_component.astype(str))
@@ -37,8 +37,6 @@ def addRunningTime(startTime, endTime):
     # Apply the mask to filter the DataFrame
     filtered_rows = dataset[mask]
 
-
-
     for index, row in filtered_rows.iterrows():
         BusRunningTimes.objects.create(
             trip_id=row['trip_id'],
@@ -46,8 +44,8 @@ def addRunningTime(startTime, endTime):
             direction=row['direction'],
             segment=row['segment'],
             date=row['date'],
-            start_time=row['start_time'].time(),
-            end_time=row['end_time'],
+            start_time=row['start_time'],
+            end_time=row['end_time'].time(),
             run_time_in_seconds=row['run_time_in_seconds'],
             length=row['length'],
             day_of_week=row['day_of_week'],

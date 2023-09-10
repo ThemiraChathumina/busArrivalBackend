@@ -6,11 +6,12 @@ from databaseDetails import database
 import mysql.connector
 from UpdateDateTime import updateTime
 from insert_run_stop import addData
+from updateArrivalTime import addRecord,deleteRecord,updateRecord,updateLocations
 
 def timer():
     print("Timer started.")
     # Set starting time and date
-    start_time = datetime.strptime('07:00:00', '%H:%M:%S').time()
+    start_time = datetime.strptime('10:18:00', '%H:%M:%S').time()
     start_date = datetime.strptime('2021-10-02', '%Y-%m-%d')
 
     # Loop through 5-minute intervals
@@ -20,7 +21,7 @@ def timer():
     hour = 6
     minute = 0
     second = 0
-    k = 100
+    k =100
     interval = 1
 
 
@@ -35,6 +36,10 @@ def timer():
 
         print("Current time: " + str(current_time), minute, second)
         updateTime(str(current_time), str(start_date))
+        addRecord(start_datetime, end_datetime)
+        deleteRecord(start_datetime, end_datetime)
+        updateRecord(start_datetime, end_datetime)
+        updateLocations(start_datetime)
         addData(start_datetime, end_datetime)
         #------------------------------
         current_time = end_time

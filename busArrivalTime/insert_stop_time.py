@@ -12,13 +12,13 @@ def addStopTime(startTime, endTime):
     dataset = pd.read_csv('data/busses_stop_train.csv')
     dataset.dropna(inplace=True)
     dataset['date'] = pd.to_datetime(dataset['date'])
-    dataset['arrival_time'] = pd.to_datetime(dataset['arrival_time'], format='%H:%M:%S')
+    dataset['departure_time'] = pd.to_datetime(dataset['departure_time'], format='%H:%M:%S')
 
-    # Sort the DataFrame by "date" and 'arrival_time'"
-    df_sorted = dataset.sort_values(by=['date', 'arrival_time'])
+    # Sort the DataFrame by "date" and 'departure_time'"
+    df_sorted = dataset.sort_values(by=['date', 'departure_time'])
 
     date_component = dataset['date'].dt.date
-    time_component = dataset['arrival_time'].dt.time
+    time_component = dataset['departure_time'].dt.time
 
     # Create a new datetime column by combining the date and time components
     dataset['new_datetime'] = pd.to_datetime(date_component.astype(str) + ' ' + time_component.astype(str))
@@ -36,8 +36,7 @@ def addStopTime(startTime, endTime):
     # Apply the mask to filter the DataFrame
     filtered_rows = dataset[mask]
     # Use .loc to assign values without warnings
-    filtered_rows.loc[:, 'arrival_time'] = filtered_rows['arrival_time']
-
+    filtered_rows.loc[:, 'departure_time'] = filtered_rows['departure_time']
 
 
     for index, row in filtered_rows.iterrows():
@@ -54,7 +53,7 @@ def addStopTime(startTime, endTime):
             bus_stop=row['bus_stop'],
             date=row['date'],
             arrival_time=row['arrival_time'],
-            departure_time=time.fromisoformat(row['departure_time']),
+            departure_time=row['departure_time'],
             dwell_time=dwell_time,
             dwell_time_in_seconds_old=row['dwell_time_in_seconds_old'],
             day_of_week=row['day_of_week'],

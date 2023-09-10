@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from .views import get_arrival_times,get_avg_buses
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('arrival-times/', get_arrival_times),
+    path('avg-buses/', get_avg_buses),
 ]
